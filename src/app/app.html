@@ -20,7 +20,7 @@
 
     <!-- Las 4 sub-tabs de arbitraje, solo visibles dentro de Arbitraje -->
     @if (view() === 'arbitraje') {
-      <div class="seg">
+      <div class="seg arb-subtabs">
         @for (t of arbTabs; track t.id) {
           <button
             class="seg-btn"

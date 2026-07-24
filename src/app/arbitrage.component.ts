@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { driver } from 'driver.js';
@@ -17,6 +17,16 @@ import {
 } from './market.config';
 
 import { buildPairs, bestBuy, bestSell, computeTrade, buyLegUsd, sellLegUsd, solveNominals } from './arb-engine';
+
+// Orígenes del contenedor padre (boston-ar) autorizados a disparar el tour por
+// postMessage. Cualquier mensaje de otro origen se ignora (seguridad). Ajustar
+// si cambia el dominio del dashboard.
+const ARB_TOUR_ALLOWED_ORIGINS = [
+  'https://boston-ar.vercel.app',
+  'https://www.bostonam.com',
+  'https://bostonam.com',
+  'http://localhost:3000',
+];
 
 @Component({
   selector: 'app-arbitrage',
@@ -703,7 +713,23 @@ import { buildPairs, bestBuy, bestSell, computeTrade, buyLegUsd, sellLegUsd, sol
       border-radius: var(--r-lg) !important;
       box-shadow: var(--shadow) !important;
       font-family: var(--font-ui) !important;
-      max-width: 320px !important;
+      min-width: 340px !important;
+      max-width: 360px !important;
+      padding: 20px !important;
+    }
+    ::ng-deep .driver-popover-footer {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 14px !important;
+      margin-top: 18px !important;
+    }
+    ::ng-deep .driver-popover-navigation-btns {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      gap: 8px !important;
     }
     ::ng-deep .driver-popover-title {
       color: var(--ink) !important;
@@ -720,6 +746,8 @@ import { buildPairs, bestBuy, bestSell, computeTrade, buyLegUsd, sellLegUsd, sol
       color: var(--ink-3) !important;
       font-family: var(--font-mono) !important;
       font-size: 11px !important;
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
     }
     ::ng-deep .driver-popover-navigation-btns button {
       background: var(--surface) !important;
@@ -743,6 +771,40 @@ import { buildPairs, bestBuy, bestSell, computeTrade, buyLegUsd, sellLegUsd, sol
          se maneja a mano vía onCloseClick (ver startTour()). */
       display: block !important;
       color: var(--ink-3) !important;
+    }
+    ::ng-deep .driver-popover-skip-btn {
+      background: #000 !important;
+      color: #fff !important;
+      border: 1px solid #000 !important;
+      border-radius: var(--r-sm) !important;
+      font-family: var(--font-ui) !important;
+      font-size: 12.5px !important;
+      font-weight: 600 !important;
+      padding: 5px 12px !important;
+      cursor: pointer !important;
+      margin: 0 !important;
+      flex-shrink: 0 !important;
+    }
+    ::ng-deep .driver-popover-playpause-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 26px !important;
+      height: 26px !important;
+      padding: 0 !important;
+      background: var(--surface) !important;
+      color: var(--ink-2) !important;
+      border: 1px solid var(--line) !important;
+      border-radius: var(--r-sm) !important;
+      font-size: 11px !important;
+      line-height: 1 !important;
+      cursor: pointer !important;
+      margin: 0 !important;
+      flex-shrink: 0 !important;
+    }
+    ::ng-deep .driver-popover-playpause-btn:hover {
+      background: var(--surface-2) !important;
+      color: var(--ink) !important;
     }
     ::ng-deep .driver-popover-arrow-side-top.driver-popover-arrow,
     ::ng-deep .driver-popover-arrow-side-bottom.driver-popover-arrow,
@@ -772,7 +834,25 @@ import { buildPairs, bestBuy, bestSell, computeTrade, buyLegUsd, sellLegUsd, sol
 
   `],
 })
-export class ArbitrageComponent {
+export class ArbitrageComponent implements OnInit, OnDestroy {
+  // El disparo del tour lo decide el CONTENEDOR PADRE (boston-ar) vía
+  // postMessage: esta app corre en un iframe de otro origen y el localStorage
+  // propio es poco confiable (Safari bloquea el storage third-party). El padre
+  // sabe si es la 1.ª entrada a Arbitraje tras activar el 2FA y nos manda
+  // { type: 'start-arbitraje-tour' }. Validamos SIEMPRE el origen del mensaje.
+  private onParentMessage = (e: MessageEvent) => {
+    if (!ARB_TOUR_ALLOWED_ORIGINS.includes(e.origin)) return;
+    if (e.data && e.data.type === 'start-arbitraje-tour') this.startTour();
+  };
+
+  ngOnInit() {
+    window.addEventListener('message', this.onParentMessage);
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('message', this.onParentMessage);
+  }
+
   startTour() {
     window.scrollTo(0, 0);
     // allowClose:false bloquea el cierre por click en el overlay (y Escape),
@@ -781,6 +861,40 @@ export class ArbitrageComponent {
     // (bypassea el gate de allowClose) y forzamos la visibilidad del botón
     // X por CSS (ver ::ng-deep .driver-popover-close-btn más abajo).
     let tourDriver: ReturnType<typeof driver>;
+
+    // --- Autoplay: avanza solo cada AUTOPLAY_MS, pausable a mano ---------
+    // El timer vive en esta closure (no en el componente) porque es 1:1 con
+    // esta instancia de tourDriver: cada startTour() arranca su propio
+    // temporizador y debe limpiar el suyo, nunca el de una corrida anterior.
+    const AUTOPLAY_MS = 4500;
+    let autoplayTimerId: ReturnType<typeof setTimeout> | null = null;
+    let autoplayEnabled = true;
+
+    const clearAutoplayTimer = () => {
+      if (autoplayTimerId !== null) {
+        clearTimeout(autoplayTimerId);
+        autoplayTimerId = null;
+      }
+    };
+
+    // Se llama tras cada step mostrado (onHighlighted): si el autoplay sigue
+    // activo, programa el próximo avance; si no, no hace nada (modo manual).
+    const scheduleAutoplayStep = () => {
+      clearAutoplayTimer();
+      if (!autoplayEnabled) return;
+      autoplayTimerId = setTimeout(() => {
+        if (tourDriver.isLastStep()) return; // se queda abierto, no autocierra
+        tourDriver.moveNext();
+      }, AUTOPLAY_MS);
+    };
+
+    // Un click manual en Anterior/Siguiente pasa a modo manual: pausa el
+    // autoplay antes de navegar, así el próximo onHighlighted no reprograma el timer.
+    const pauseFromManualNav = () => {
+      autoplayEnabled = false;
+      clearAutoplayTimer();
+    };
+
     tourDriver = driver({
       showProgress: true,
       allowClose: false,
@@ -788,10 +902,52 @@ export class ArbitrageComponent {
       prevBtnText: 'Anterior',
       doneBtnText: 'Hecho',
       progressText: '{{current}} de {{total}}',
-      onCloseClick: () => tourDriver.destroy(),
+      onCloseClick: () => { clearAutoplayTimer(); tourDriver.destroy(); },
+      onDestroyed: () => clearAutoplayTimer(),
+      onHighlighted: () => scheduleAutoplayStep(),
+      // driver.js no expone moveNext/movePrevious "puros": setear onNextClick/
+      // onPrevClick a nivel global reemplaza la navegación por defecto de esos
+      // botones, así que acá replicamos esa navegación a mano (isLastStep ⇒
+      // cierra como el botón "Hecho"; si no, moveNext) después de pasar a modo manual.
+      onNextClick: () => {
+        pauseFromManualNav();
+        if (tourDriver.isLastStep()) tourDriver.destroy();
+        else tourDriver.moveNext();
+      },
+      onPrevClick: () => {
+        pauseFromManualNav();
+        tourDriver.movePrevious();
+      },
+      // Agrega botones "Omitir" y pausa/play junto a "Anterior"/"Siguiente" en
+      // cada step. driver.js@1.8 no tiene una opción declarativa de botones
+      // custom en el popover: el hook onPopoverRender da acceso al DOM ya
+      // montado del popover para insertarlos a mano (se recrea en cada step).
+      onPopoverRender: (popover) => {
+        const skipBtn = document.createElement('button');
+        skipBtn.innerText = 'Omitir';
+        skipBtn.className = 'driver-popover-skip-btn';
+        popover.footerButtons.insertBefore(skipBtn, popover.footerButtons.firstChild);
+        skipBtn.addEventListener('click', () => tourDriver.destroy());
+
+        const playPauseBtn = document.createElement('button');
+        playPauseBtn.type = 'button';
+        playPauseBtn.className = 'driver-popover-playpause-btn';
+        const syncPlayPauseBtn = () => {
+          playPauseBtn.innerHTML = autoplayEnabled ? '&#10073;&#10073;' : '&#9654;';
+          playPauseBtn.title = autoplayEnabled ? 'Pausar avance automático' : 'Reanudar avance automático';
+        };
+        syncPlayPauseBtn();
+        playPauseBtn.addEventListener('click', () => {
+          autoplayEnabled = !autoplayEnabled;
+          if (autoplayEnabled) scheduleAutoplayStep();
+          else clearAutoplayTimer();
+          syncPlayPauseBtn();
+        });
+        popover.footerButtons.insertBefore(playPauseBtn, popover.footerButtons.firstChild);
+      },
       steps: [
         {
-          element: '.tour-selector',
+          element: '.arb-subtabs',
           popover: {
             title: 'Elegí tu tipo de operación',
             description: 'Operá con Dólar MEP o Contado con Liquidación, cada uno con su plazo de liquidación: Contado Inmediato o 24hs.',
@@ -808,7 +964,7 @@ export class ArbitrageComponent {
           element: '.tour-params',
           popover: {
             title: 'Configurá tu inversión',
-            description: 'Definí el capital inicial en pesos y el volumen mínimo en dólares que querés operar.',
+            description: 'Definí "Monto inicial ARS" (el capital sobre el que se calcula el % de rendimiento) y "Presupuesto real ARS" (lo que realmente vas a operar en el broker). Te recomendamos dejar la selección de CEDEAR en "Automático (mejor)" en los selects de compra/venta en vez de elegir manualmente.',
           },
         },
         {
