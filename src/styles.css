@@ -212,3 +212,42 @@ body::before {
 .driver-popover-arrow-side-right.driver-popover-arrow {
   border-color: var(--surface) !important;
 }
+
+/* ─── Resaltado dirigido por el tutorial de boston-ar ──────────────────
+   El tour corre en el parent (cross-origin), que en cada paso nos manda qué
+   módulo marcar vía postMessage (ver parent-tour.util.ts). El parent cubre toda
+   la app con un velo y deja el iframe nítido, así que acá alcanza con un anillo
+   que destaque el módulo por encima del resto.
+   `position: relative` es necesario para que el z-index aplique en elementos
+   estáticos (ej. .tour-params, section.panel). */
+.bam-tour-focus {
+  position: relative;
+  z-index: 20;
+  border-radius: 12px;
+  outline: 2px solid #2563eb;
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 6px rgba(37, 99, 235, 0.20),
+    0 0 26px 6px rgba(37, 99, 235, 0.28);
+  animation: bam-tour-pulse 1.8s ease-in-out infinite;
+  transition: outline-color 180ms ease, box-shadow 180ms ease;
+}
+
+@keyframes bam-tour-pulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.20), 0 0 26px 6px rgba(37, 99, 235, 0.28); }
+  50%      { box-shadow: 0 0 0 9px rgba(37, 99, 235, 0.12), 0 0 34px 10px rgba(37, 99, 235, 0.34); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bam-tour-focus { animation: none; }
+}
+
+/* Embebidos en boston-ar el tutorial lo maneja el parent. runTour() ya no
+   arranca dentro del iframe; esto es el cinturón de seguridad por si algún
+   popover u overlay de driver.js se montara igual, para no apilar dos
+   tutoriales encima del otro. */
+body.bam-embedded .driver-popover,
+body.bam-embedded .driver-overlay,
+body.bam-embedded .driver-active-element::after {
+  display: none !important;
+}

@@ -1,5 +1,6 @@
 import { driver, type DriveStep } from 'driver.js';
 import 'driver.js/dist/driver.css';
+import { isEmbedded } from './parent-tour.util';
 
 // Fábrica compartida de tours driver.js: mismo look (ver .driver-popover* en
 // styles.css), mismos controles (Anterior/Siguiente/Hecho + "Omitir" +
@@ -7,6 +8,13 @@ import 'driver.js/dist/driver.css';
 // cualquier tour de la app (arbitraje, cotizaciones, …). Cada llamado crea su
 // propia instancia — nunca se comparte estado entre tours.
 export function runTour(steps: DriveStep[], seenKey: string, opts?: { force?: boolean }) {
+  // Embebidos en boston-ar el tutorial lo maneja el parent, que ya pone su
+  // propio velo y su propia tarjeta y nos va pidiendo qué resaltar por
+  // postMessage. Correr además el tour de driver.js apilaría dos overlays y dos
+  // popovers. Se corta acá y no en cada llamador para que valga para todos los
+  // tours (arbitraje, cotizaciones y los que se sumen).
+  if (isEmbedded()) return;
+
   if (!opts?.force) {
     let seen = true;
     try { seen = localStorage.getItem(seenKey) === '1'; } catch {}
