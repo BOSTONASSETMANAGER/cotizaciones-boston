@@ -1,0 +1,30 @@
+/* FlipNum.css — ex `styles: [\`...\`]` de src/app/flip-num.component.ts.
+   Portado verbatim salvo el scoping obligado por pasar a CSS global (§5-bis):
+
+   1. `:host` (el elemento <app-flip-num> de Angular) → `.flip-num`, la clase del
+      <span> que ahora envuelve las fichas. En React no hay host element propio,
+      así que el wrapper es explícito.
+   2. `.ch` → `.flip-num .ch`. `.ch` es un nombre genérico de dos letras y este
+      CSS ahora es global: dejarlo suelto era una colisión esperando pasar. La
+      clase del template NO cambia (sigue siendo class="ch"), sólo el selector. */
+
+.flip-num {
+  display: inline-flex;
+  justify-content: flex-end;
+  perspective: 160px;
+  white-space: pre;
+}
+.flip-num .ch {
+  display: inline-block;
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  animation: flap .32s cubic-bezier(.3, .7, .4, 1) backwards;
+}
+@keyframes flap {
+  0%   { transform: rotateX(-88deg); opacity: .35; }
+  55%  { transform: rotateX(14deg); opacity: 1; }
+  100% { transform: rotateX(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-num .ch { animation: none; }
+}

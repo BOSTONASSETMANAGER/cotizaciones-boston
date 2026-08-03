@@ -1,0 +1,193 @@
+/* ── Mosaico de 3 columnas, auto-balanceado en TS (ver `columns` en
+   cotizaciones.component.ts): cada casillero se asigna a la columna que
+   menos altura acumula, por altura REAL estimada de su contenido — no hay
+   asignación fija por posición. align-items:start evita que el grid estire
+   ninguna card para igualar la columna más alta: cada una mide exactamente
+   lo que necesita, y es normal/esperado que las columnas terminen a
+   alturas distintas. ─────────────────────────────────────────────────────── */
+.mosaic {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
+  gap: 14px;
+  max-width: 100%;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* Mapa de calor de CEDEARs: card de ancho completo arriba del mosaico. */
+.heat-tile { margin-bottom: 14px; }
+
+/* ── Modo simple: Mercado hoy (mapa) + columna Dólar / Oportunidades ───────
+   La grilla ocupa todo el alto útil del viewport (toolbar 52 + padding del
+   panel 14 + footer fijo ~44): el mapa estira su lienzo y las dos cards de
+   la derecha reparten sus filas en el alto completo. */
+.basic {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  height: calc(100dvh - 110px);
+  min-height: 480px;
+}
+.basic-market {
+  display: flex; flex-direction: column;
+  min-height: 0;
+}
+.basic-side {
+  display: flex; flex-direction: column; gap: 14px;
+  min-height: 0;
+}
+.basic-side .tile { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.basic-side .dolar-rows { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.basic-side .dolar-row { flex: 1; }
+.basic-side .opps { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.basic-side .opp { flex: 1; }
+
+.opps { display: flex; flex-direction: column; }
+.opp {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center; gap: 10px;
+  padding: 10px 14px; border-bottom: 1px solid var(--line);
+  font-family: var(--font-ui); font-size: 12px; color: var(--ink-2);
+  text-align: left;
+  transition: background .12s;
+}
+.opp:hover { background: var(--accent-sf); }
+.opp-tab {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .04em; color: var(--ink);
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: var(--r-sm); padding: 2px 7px; white-space: nowrap;
+}
+.opp-trade { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opp-trade b { font-family: var(--font-mono); color: var(--ink); }
+.opp-vol { font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+.opp-net { font-size: 14px; font-weight: 700; white-space: nowrap; }
+.opp-net.pos { color: var(--pos); }
+.opp-net.neg { color: var(--neg); }
+.opp-note {
+  padding: 8px 14px; font-size: 10.5px; color: var(--ink-3);
+  border-top: 1px solid var(--line); background: var(--surface-2);
+}
+
+@media (max-width: 1000px) {
+  /* En una columna no tiene sentido forzar el alto del viewport. */
+  .basic { grid-template-columns: 1fr; height: auto; }
+}
+
+/* ── Header del casillero ─────────────────────────────────────────────────── */
+.tile-head {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 10px 14px; border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.tile-name {
+  font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--ink);
+}
+.tile-status {
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); white-space: nowrap;
+}
+.tile-status.err { color: var(--neg); }
+.tile-more {
+  margin-left: auto; flex-shrink: 0;
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  font-family: var(--font-ui); font-size: 11.5px; font-weight: 600; color: var(--accent-2);
+  padding: 2px; transition: opacity .12s;
+}
+.tile-more:hover { opacity: .75; }
+.tile-more:active { transform: translateY(1px); }
+
+/* ── Mini-tabla (misma receta que la tabla densa del shell). Altura
+   automática según contenido — sin cap ni scroll interno. ────────────────── */
+.tile-body table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tile-body th {
+  text-align: left; padding: 7px 12px; background: var(--surface-2);
+  font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--ink-3); border-bottom: 1px solid var(--line); white-space: nowrap;
+}
+.tile-body th.num, .tile-body td.num { text-align: right; }
+.tile-body td {
+  padding: 7px 12px; border-bottom: 1px solid var(--line);
+  white-space: nowrap; color: var(--ink);
+}
+.tile-body tbody tr:nth-child(even) td { background: rgba(239,238,235,.5); }
+.tile-body tbody tr:hover td { background: var(--accent-sf); }
+.tile-body td.pct.pos { color: var(--pos); font-weight: 600; }
+.tile-body td.pct.neg { color: var(--neg); font-weight: 600; }
+
+/* Subtítulo de grupo (tipo de bono/letra) dentro de la mini-tabla. Va después
+   de las reglas de striping/hover para pisarles el fondo. */
+.tile-body tbody tr.group-row td {
+  background: var(--surface-2);
+  font-weight: 700; font-size: 10px; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--ink-3); padding: 5px 12px;
+}
+
+.tile-error {
+  margin: 12px 14px; padding: 9px 12px; border-radius: var(--r);
+  background: var(--neg-bg); border: 1px solid var(--neg-line); color: var(--neg);
+  font-size: 12px;
+}
+.tile-empty {
+  text-align: center;
+  color: var(--ink-3); font-size: 12.5px; padding: 24px;
+}
+
+/* ── Casillero Dólar: formato propio, lista vertical (una fila por casa),
+   mismo ancho que la card de arriba en su columna. ───────────────────────── */
+.dolar-rows { display: flex; flex-direction: column; }
+.dolar-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 14px; border-bottom: 1px solid var(--line);
+}
+.dolar-row:last-child { border-bottom: 0; }
+.dolar-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dolar-casa { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+.dolar-updated {
+  font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); white-space: nowrap;
+}
+.dolar-vals { display: flex; gap: 16px; flex-shrink: 0; }
+.dolar-val {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1px;
+}
+.dolar-val em {
+  font-style: normal; font-size: 9.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--ink-3);
+}
+.dolar-val b {
+  font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--ink);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  .mosaic { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .heat-tile { margin-bottom: 10px; }
+  .tile-head { padding: 8px 12px; }
+  .tile-body table { font-size: 11px; }
+  .tile-body th, .tile-body td { padding: 5px 8px; }
+  .tile-name { font-size: 12px; }
+  .dolar-row { padding: 8px 12px; }
+  .dolar-casa { font-size: 11px; }
+  .dolar-val b { font-size: 13px; }
+}

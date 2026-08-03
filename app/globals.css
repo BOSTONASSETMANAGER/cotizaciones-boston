@@ -1,0 +1,253 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   Sistema de diseño — Cotizaciones Boston
+   Estética: terminal financiera, densa y funcional. Inspirado en la colorimetría
+   de la Terminal de Bloomberg: una base neutra y calma de baja fatiga (acá un
+   off-white papel en vez de blanco puro), con el color saturado RESERVADO sólo
+   para significado (compra/venta, P&L, oportunidad) — el verde resalta porque
+   casi todo lo demás es neutro. Un único acento azul, números en monospace.
+   Sin púrpura "AI", sin glows, sin cajas redondeadas de relleno.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --font-ui:      'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Manrope', 'Geist', system-ui, sans-serif; /* títulos/marca — igual que boston-ar */
+  --font-mono:    'Geist Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Superficies — matcheadas al dashboard de boston-ar: fondo azulado frío y
+     superficies neutras "cool" (mismo rol que antes, solo cambia el matiz
+     cálido→frío para fundirse con el shell glass del dashboard). */
+  --bg:        #eef3fb;  /* base sólida de respaldo; el body pinta el gradiente del dashboard */
+  --surface:   #ffffff;  /* tarjetas blancas, como las cards glass del dashboard */
+  --surface-2: #eaf1fb;  /* segmentados / cabeceras de tabla / filas alt — azulado claro */
+  --surface-3: #dce7f5;  /* nivel de fondo más profundo (heatmap) — azulado */
+
+  /* Tinta — casi-negro neutro para los datos; grises legibles para lo secundario */
+  --ink:   #1a1a1d;
+  --ink-2: #4d4d54;
+  --ink-3: #78787f;
+
+  /* Líneas — frías, acordes al fondo azulado */
+  --line:   #dbe4f0;
+  --line-2: #c5d3e6;
+
+  /* Acento único (azul eléctrico, usado con moderación) */
+  --accent:    #2563eb;
+  --accent-2:  #1d4ed8;
+  --accent-sf: #eef3ff;
+
+  /* Semántica P&L — saturada y reservada SÓLO para significado. `*-strong` es el
+     tono más profundo para los números protagonistas (operable, neto). */
+  --pos:    #15803d;  --pos-bg: #ecfbf1;  --pos-line: #a6e6bf;  --pos-strong: #166534;
+  --neg:    #be1f1f;  --neg-bg: #fceff0;  --neg-line: #f3bbbb;  --neg-strong: #991b1b;
+  --warn:   #b45309;  --warn-bg:#fcf5e6;  --warn-line:#f0d384;  --warn-strong: #92400e;
+
+  /* Radios y sombra */
+  --r-sm: 6px;
+  --r:    8px;
+  --r-lg: 12px;
+  --shadow:    0 1px 2px rgba(24,24,27,.04), 0 10px 26px -14px rgba(24,24,27,.14);
+  --shadow-sm: 0 1px 2px rgba(24,24,27,.05);
+
+  --toolbar-h: 52px;
+
+  /* Paleta de marca navy + glass del dashboard de boston-ar (para botones). */
+  --boston-700: #1d3969;
+  --glass-bg:        rgba(255,255,255,0.35);
+  --glass-bg-hover:  rgba(255,255,255,0.55);
+  --glass-stroke:    rgba(255,255,255,0.55);
+  --glass-shadow:    0 0 0 1px rgba(29,57,105,0.06), 0 1px 0 rgba(255,255,255,0.85) inset, 0 10px 24px -10px rgba(15,33,66,0.25);
+  --navy-grad:       linear-gradient(180deg, #2B4B85 0%, #1D3969 100%);
+  --navy-shadow:     0 1px 0 rgba(255,255,255,0.25) inset, 0 -1px 0 rgba(0,0,0,0.2) inset, 0 8px 20px -6px rgba(29,57,105,0.5), 0 2px 6px rgba(29,57,105,0.2);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  font-family: var(--font-ui);
+  /* Fondo del dashboard de boston-ar: gradiente azulado (dashboard/layout.tsx). */
+  background: linear-gradient(180deg, #eef3fb 0%, #e4ecf7 100%) fixed;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Capa "ambient": blobs azules difuminados detrás de todo, igual que el
+   .ambient del dashboard. Fijo, no interactivo, por debajo del contenido. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 700px at 82%  8%, rgba(79,124,255,0.20),  transparent 60%),
+    radial-gradient(700px 600px at 10% 20%, rgba(156,188,237,0.22), transparent 62%),
+    radial-gradient(800px 600px at 50% 110%, rgba(107,147,196,0.16), transparent 60%),
+    radial-gradient(600px 500px at 88% 90%, rgba(199,214,230,0.30), transparent 62%);
+}
+
+/* Números tabulares y monospace donde importe la grilla numérica */
+.mono, .num, td.num, th.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+::selection { background: var(--accent-sf); }
+
+/* Scrollbars discretas (acorde a un panel de datos) */
+* { scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
+*::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+/* ── driver.js: alinear el popover del tour al UI kit ─────────────────────
+   Global (no ::ng-deep) porque el tour se dispara desde varios componentes
+   (arbitraje, cotizaciones) vía tour.util.ts — un único lugar para el look. */
+.driver-popover {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--shadow) !important;
+  font-family: var(--font-ui) !important;
+  min-width: 340px !important;
+  max-width: 360px !important;
+  padding: 20px !important;
+}
+.driver-popover-footer {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  margin-top: 18px !important;
+}
+.driver-popover-navigation-btns {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.driver-popover-title {
+  color: var(--ink) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+}
+.driver-popover-description {
+  color: var(--ink-2) !important;
+  font-size: 12.5px !important;
+  line-height: 1.5 !important;
+}
+.driver-popover-progress-text {
+  color: var(--ink-3) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+.driver-popover-navigation-btns button {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-sm) !important;
+  font-family: var(--font-ui) !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+}
+.driver-popover-next-btn,
+.driver-popover-done-btn {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+}
+.driver-popover-close-btn {
+  /* driver.js oculta este botón (display:none inline) cuando allowClose es
+     false; lo reforzamos visible porque el cierre se maneja a mano vía
+     onCloseClick (ver tour.util.ts). */
+  display: block !important;
+  color: var(--ink-3) !important;
+}
+.driver-popover-skip-btn {
+  background: #000 !important;
+  color: #fff !important;
+  border: 1px solid #000 !important;
+  border-radius: var(--r-sm) !important;
+  font-family: var(--font-ui) !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  padding: 5px 12px !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+.driver-popover-playpause-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 26px !important;
+  height: 26px !important;
+  padding: 0 !important;
+  background: var(--surface) !important;
+  color: var(--ink-2) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-sm) !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+.driver-popover-playpause-btn:hover {
+  background: var(--surface-2) !important;
+  color: var(--ink) !important;
+}
+.driver-popover-arrow-side-top.driver-popover-arrow,
+.driver-popover-arrow-side-bottom.driver-popover-arrow,
+.driver-popover-arrow-side-left.driver-popover-arrow,
+.driver-popover-arrow-side-right.driver-popover-arrow {
+  border-color: var(--surface) !important;
+}
+
+/* ─── Resaltado dirigido por el tutorial de boston-ar ──────────────────
+   El tour corre en el parent (cross-origin), que en cada paso nos manda qué
+   módulo marcar vía postMessage (ver parent-tour.util.ts). El parent cubre toda
+   la app con un velo y deja el iframe nítido, así que acá alcanza con un anillo
+   que destaque el módulo por encima del resto.
+   `position: relative` es necesario para que el z-index aplique en elementos
+   estáticos (ej. .tour-params, section.panel). */
+.bam-tour-focus {
+  position: relative;
+  z-index: 20;
+  border-radius: 12px;
+  outline: 2px solid #2563eb;
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 6px rgba(37, 99, 235, 0.20),
+    0 0 26px 6px rgba(37, 99, 235, 0.28);
+  animation: bam-tour-pulse 1.8s ease-in-out infinite;
+  transition: outline-color 180ms ease, box-shadow 180ms ease;
+}
+
+@keyframes bam-tour-pulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.20), 0 0 26px 6px rgba(37, 99, 235, 0.28); }
+  50%      { box-shadow: 0 0 0 9px rgba(37, 99, 235, 0.12), 0 0 34px 10px rgba(37, 99, 235, 0.34); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bam-tour-focus { animation: none; }
+}
+
+/* Embebidos en boston-ar el tutorial lo maneja el parent. runTour() ya no
+   arranca dentro del iframe; esto es el cinturón de seguridad por si algún
+   popover u overlay de driver.js se montara igual, para no apilar dos
+   tutoriales encima del otro. */
+body.bam-embedded .driver-popover,
+body.bam-embedded .driver-overlay,
+body.bam-embedded .driver-active-element::after {
+  display: none !important;
+}

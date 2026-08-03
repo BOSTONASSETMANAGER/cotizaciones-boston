@@ -55,3 +55,8 @@ backend/cohen-feed/feed.log
 
 # Estado local de herramientas (claude-flow)
 .claude-flow/
+
+# Next.js
+/.next/
+/out/
+next-env.d.ts

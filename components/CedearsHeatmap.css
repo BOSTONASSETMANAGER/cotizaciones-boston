@@ -1,0 +1,171 @@
+/* CedearsHeatmap.css — extraído verbatim del `styles: [...]` inline de
+   src/app/cedears-heatmap.component.ts.
+
+   Únicos cambios (obligados por el pasaje de Angular a CSS global, ver §5-bis
+   del contrato de migración):
+     - `:host` → `.cedears-heatmap` (la clase root del componente, que reemplaza
+       al host element de Angular);
+     - `:host(.full)` / `:host(.fill)` → `.cedears-heatmap.full` / `.fill`
+       (ex `host: { '[class.full]': 'full()', '[class.fill]': 'fill()' }`);
+     - el resto de las reglas queda descendiente de `.cedears-heatmap`, que es
+       exactamente el scope que les daba la encapsulación emulada de Angular.
+       Sin eso, `.empty` (shell.css, padding 64px), `.num` (globals.css) y los
+       nombres genéricos `.map` / `.cell` / `.sector` / `.tip` / `.legend` /
+       `.key` / `.cap` quedarían globales y colisionarían.
+   Ninguna declaración se tocó. */
+
+.cedears-heatmap { display: block; max-width: 100%; overflow-x: hidden; }
+.cedears-heatmap .map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1000 / 430;
+  overflow: hidden;
+  background: var(--surface-3);
+}
+.cedears-heatmap.full .map { height: max(600px, calc(100vh - 230px)); aspect-ratio: unset; }
+.cedears-heatmap.fill {
+  display: flex; flex-direction: column;
+  flex: 1; min-height: 0;
+}
+.cedears-heatmap.fill .map { flex: 1; height: auto; min-height: 320px; aspect-ratio: unset; }
+
+@media (max-width: 600px) {
+  .cedears-heatmap .map { aspect-ratio: 4 / 3; }
+  .cedears-heatmap.full .map { height: max(400px, calc(100dvh - 180px)); }
+  .cedears-heatmap.fill .map { min-height: 240px; }
+}
+
+.cedears-heatmap .mobile-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+.cedears-heatmap .sector-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.cedears-heatmap .card-head {
+  padding: 9px 16px;
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--ink-3);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cedears-heatmap .card-body {
+  display: flex;
+  flex-direction: column;
+  /* `margin-top: 0` NO está en el original: Arbitrage.css tiene un `.card-body`
+     global (bare, `margin-top: 8px`) que al dejar de estar encapsulado se filtra
+     acá. Se neutraliza para conservar el alto exacto de las cards mobile. El fix
+     de raíz es prefijar ese selector con `.arb` (archivo de B2-arbitrage). */
+  margin-top: 0;
+}
+.cedears-heatmap .ticker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px 11px 13px;
+  border-bottom: 1px solid var(--line);
+}
+.cedears-heatmap .ticker-row:last-child { border-bottom: none; }
+/* Wash de familia + barra izquierda de 3px ("zona destacada", ver
+   ui-kit.md §5.4) — mismo tratamiento que .nm-prof en arbitrage.component.ts. */
+.cedears-heatmap .ticker-row.pos { background: var(--pos-bg); box-shadow: inset 3px 0 0 var(--pos); }
+.cedears-heatmap .ticker-row.neg { background: var(--neg-bg); box-shadow: inset 3px 0 0 var(--neg); }
+.cedears-heatmap .ticker-sym {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+.cedears-heatmap .ticker-pct {
+  font-weight: 700;
+  font-size: 14px;
+}
+.cedears-heatmap .ticker-row.pos .ticker-pct { color: var(--pos-strong); }
+.cedears-heatmap .ticker-row.neg .ticker-pct { color: var(--neg-strong); }
+
+.cedears-heatmap .sector {
+  position: absolute;
+  display: flex; flex-direction: column;
+  /* 1px por sector = 2px de separación efectiva entre sectores */
+  border: 1px solid var(--surface-3);
+  overflow: hidden;
+}
+.cedears-heatmap .sector-head {
+  flex-shrink: 0;
+  display: flex; align-items: center;
+  min-height: 12px;
+  padding: 0 5px;
+  background: var(--ink-2);
+  overflow: hidden;
+}
+.cedears-heatmap .sector-head span {
+  color: #f3f2f0;
+  font-size: 8.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .07em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cedears-heatmap .sector-body { position: relative; flex: 1; min-height: 0; }
+
+.cedears-heatmap .cell {
+  position: absolute;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1px;
+  border: 1px solid var(--surface-3);
+  overflow: hidden;
+  cursor: default;
+}
+.cedears-heatmap .cell.hover { filter: brightness(1.06); box-shadow: inset 0 0 0 2px rgba(26,26,29,.35); }
+.cedears-heatmap .sym { font-family: var(--font-ui); font-weight: 700; line-height: 1.05; letter-spacing: .01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.cedears-heatmap .pct { line-height: 1.05; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.cedears-heatmap .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.cedears-heatmap .tip {
+  position: absolute; z-index: 3;
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 8px 10px;
+  background: var(--ink); color: #fdfdfc;
+  border-radius: var(--r-sm);
+  font-size: 11.5px; line-height: 1.25;
+  pointer-events: none;
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+.cedears-heatmap .tip b { font-family: var(--font-display); font-size: 12.5px; }
+.cedears-heatmap .tip .sec { color: #b9b9bf; font-size: 10.5px; }
+.cedears-heatmap .tip .vol { color: #b9b9bf; }
+
+.cedears-heatmap .legend {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  padding: 8px 14px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 10.5px; color: var(--ink-3);
+}
+.cedears-heatmap .legend .cap { font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.cedears-heatmap .legend .area { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 500; }
+.cedears-heatmap .legend .key { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); }
+.cedears-heatmap .legend .key i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+.cedears-heatmap .empty {
+  text-align: center; color: var(--ink-3); font-size: 12.5px; padding: 24px;
+  /* Las tres líneas siguientes NO están en el original: shell.css tiene un
+     `.empty` global (padding 64px + borde punteado + fondo de superficie) que
+     antes no llegaba acá por la encapsulación emulada de Angular. El scope
+     `.cedears-heatmap .empty` gana en padding/color/font-size, pero border y
+     background se sumarían igual. Se resetean para que "Sin datos." se vea
+     exactamente como en el original. */
+  border: 0;
+  border-radius: 0;
+  background: none;
+}

@@ -1,0 +1,840 @@
+/* Operar.css — extraido verbatim del bloque styles: [`...`] inline de
+   src/app/operar.component.ts (lineas 1099-1934). CSS global, NO CSS Modules:
+   los class del template se portan intactos a className (ver MIGRATION-CONTRACT §5-bis). */
+
+.operar { display: flex; flex-direction: column; gap: 18px; }
+
+/* Buscador */
+.op-search-wrap { position: relative; max-width: 300px; }
+.op-search {
+  width: 100%; max-width: 300px; height: 40px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--surface); color: var(--ink);
+  font-family: var(--font-ui); font-size: 14px; outline: none;
+  transition: border-color .12s, box-shadow .12s;
+}
+.op-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-sf); }
+.op-search-results {
+  position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; right: 0;
+  display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  box-shadow: var(--shadow); max-height: 320px; overflow-y: auto;
+}
+.op-result {
+  display: grid; grid-template-columns: 84px 1fr auto auto; align-items: center; gap: 10px;
+  padding: 8px 14px; border: 0; border-bottom: 1px solid var(--line);
+  background: var(--surface); cursor: pointer; text-align: left;
+  transition: background .12s;
+}
+.op-result:last-child { border-bottom: 0; }
+.op-result:hover { background: var(--accent-sf); }
+.or-sym { font-family: var(--font-mono); font-weight: 600; font-size: 13px; color: var(--ink); }
+.or-desc { font-size: 11.5px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.or-px { font-size: 13px; color: var(--ink-2); }
+.or-chip, .om-chip, .ori-chip {
+  display: inline-flex; align-items: center; height: 20px; padding: 0 7px;
+  border-radius: var(--r-sm); font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  background: var(--surface-2); color: var(--ink-3); border: 1px solid var(--line);
+}
+.or-chip.pos, .om-chip.pos, .ori-chip.pos { background: var(--pos-bg); border-color: var(--pos-line); color: var(--pos); }
+.or-chip.neg, .om-chip.neg, .ori-chip.neg { background: var(--neg-bg); border-color: var(--neg-line); color: var(--neg); }
+.ori-chip.warn { background: var(--warn-bg); border-color: var(--warn-line); color: var(--warn); }
+.op-empty-inline { border: 0; padding: 14px; }
+
+/* Pills de instrumento */
+.op-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.op-pill {
+  display: flex; align-items: center; gap: 9px;
+  height: 44px; padding: 0 14px 0 6px;
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface); cursor: pointer;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--ink);
+  transition: border-color .14s, transform .04s, box-shadow .14s;
+}
+.op-pill:hover { border-color: var(--line-2); box-shadow: var(--shadow-sm); }
+.op-pill:active { transform: translateY(1px); }
+.op-pill-circle {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 999px;
+  background: var(--surface-2); color: var(--ink-2);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+}
+/* Pill activo (filtro de Tenencias por tipo, ver .op-cart-filter): mismo
+   patrón "flota" que .op-rango-pill.on/.op-cur-pill.on — sombra +
+   anillo interno --line-2, sin color por tipo (ui-kit §5.1: el color
+   comunica dirección/resultado, no decora). */
+.op-pill.on { border-color: var(--line-2); box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--line-2); }
+.op-pill.on .op-pill-circle { background: var(--ink); color: var(--surface); }
+
+/* Composición de la cartera por tipo de instrumento (ver PROMPT 7) —
+   box chico en superficies neutras, % en mono, sin color por tipo. */
+.op-cart-comp-card { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; }
+.op-cart-comp-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.op-cart-comp-chip {
+  display: inline-flex; align-items: baseline; gap: 5px;
+  padding: 5px 10px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface-2);
+}
+.op-cart-comp-pct { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--ink); }
+.op-cart-comp-lbl { font-size: 11.5px; color: var(--ink-2); }
+
+/* Cards genéricas */
+.op-card {
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface); box-shadow: var(--shadow-sm); padding: 14px 16px;
+}
+.op-card h3 {
+  margin: 0 0 12px; font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--ink);
+}
+
+/* Dólares — 3 columnas divididas (label arriba, valor mono debajo) */
+.op-dolares-row { display: flex; }
+.op-dollar-item {
+  flex: 1; display: flex; flex-direction: column; gap: 3px;
+  padding: 0 16px; border-right: 1px solid var(--line);
+}
+.op-dollar-item:first-child { padding-left: 0; }
+.op-dollar-item:last-child { border-right: 0; padding-right: 0; }
+.od-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); }
+.od-val { font-size: 16px; font-weight: 600; color: var(--ink); }
+
+.op-resumen-val, .op-resumen-prof .rp-val { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--ink); }
+.op-resumen-val.pos, .op-resumen-prof.pos .rp-val { color: var(--pos-strong); }
+.op-resumen-val.neg, .op-resumen-prof.neg .rp-val { color: var(--neg-strong); }
+.op-resumen-pct { font-size: 12.5px; color: var(--ink-3); }
+.op-resumen-prof { display: inline-block; padding: 4px 10px; border-radius: var(--r); }
+.op-resumen-prof.pos { background: var(--pos-bg); box-shadow: inset 3px 0 0 var(--pos); }
+.op-resumen-prof.neg { background: var(--neg-bg); box-shadow: inset 3px 0 0 var(--neg); }
+
+.op-subtab.sell { border-color: var(--warn-line); color: var(--warn-strong); background: var(--warn-bg); }
+.ori-chip.accent { background: var(--accent-sf); border-color: var(--accent); color: var(--accent-2); }
+
+/* Tenencias/Movimientos en mobile: cards en vez de tabla (ver .op-cartera-table
+   más abajo), mismo patrón que .mobile-cards/.sector-card de cedears-heatmap.component.ts. */
+.op-mobile-cards { display: none; flex-direction: column; gap: 10px; }
+
+/* Cards de Tenencias/Movimientos: layout en columna con gap regular
+   (misma separación que .op-movers-grid/.op-fondos-grid). op-id-row
+   hace wrap propio (flex-wrap + gap) en vez de depender de espacios en
+   blanco entre tags del template — con preserveWhitespaces:false (default
+   de Angular) esos nodos de texto se eliminan, así que symbol+chips
+   quedaban pegados sin punto de corte y desbordaban la card en anchos
+   angostos; esa era la causa real del scroll horizontal. */
+.op-cart-card { display: flex; flex-direction: column; gap: 10px; }
+.op-id-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.op-cart-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.op-cart-status { align-self: flex-start; }
+.op-cart-delta {
+  display: inline-flex; flex-direction: column; gap: 2px; align-self: flex-start;
+  padding: 6px 12px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface-2);
+}
+.op-cart-delta-val { font-family: var(--font-mono); font-size: 17px; font-weight: 700; color: var(--ink); }
+.op-cart-delta.pos { background: var(--pos-bg); border-color: var(--pos-line); }
+.op-cart-delta.pos .op-cart-delta-val { color: var(--pos-strong); }
+.op-cart-delta.neg { background: var(--neg-bg); border-color: var(--neg-line); }
+.op-cart-delta.neg .op-cart-delta-val { color: var(--neg-strong); }
+
+/* Acciones — 2 columnas INDEPENDIENTES (pedido de Elio), mismo mecanismo
+   de grilla que .mosaic de cotizaciones.component.css (grid de N
+   columnas + gap). Cada .op-acciones-col agrupa su propio dropdown +
+   tabla/cards — antes esta grilla contenía 2 .op-table-wrap directas
+   (mismo instrumento global); ahora cada columna es independiente. */
+.op-acciones-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.op-acciones-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+/* Las tablas de Home llegan hasta el footer (pedido de Elio): altura fija
+   anclada al viewport en vez del max-height genérico de .op-table-wrap.
+   El descuento de 275px es la suma de todo lo que hay arriba y abajo de
+   la tabla en desktop: toolbar 52 + padding .panel 14 + op-home-head 40 +
+   gap 18 + borde/padding de card 15 + dropdown 40 + gap 10 (=189 arriba)
+   + padding card 15 + footer legal ~63 + 8 de aire (=86 abajo). height
+   (no max-height) para que ambas columnas queden parejas aunque una
+   tenga pocas filas. */
+.op-acciones-grid .op-table-wrap { height: calc(100dvh - 275px); max-height: none; }
+/* Dropdown custom de instrumento de cada columna (reemplaza el <select>
+   nativo, que no permite estilar el menú de opciones de forma
+   consistente entre navegadores): botón fit-content con flecha pegada
+   al texto + menú flotante propio (<ul>/<li>), mismo radio --r-sm en
+   botón y menú, hover/active en negro con texto blanco (pedido de UI). */
+.op-dropdown { position: relative; align-self: flex-start; }
+.op-dropdown-btn {
+  display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+  /* var(--r) y no --r-sm: este botón de 40px convive pegado a la esquina
+     --r-lg de la card y con los widgets de 40px de la barra superior
+     (buscador, Dólar, Destacada), todos en var(--r) — con --r-sm su
+     esquina se veía más recta que la de la card (pedido de Elio). */
+  height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--surface); color: var(--ink); font-family: var(--font-ui);
+  font-size: 14px; font-weight: 600; cursor: pointer; outline: none;
+  transition: border-color .12s, box-shadow .12s;
+}
+.op-dropdown-btn:hover { border-color: var(--line-2); }
+.op-dropdown.open .op-dropdown-btn { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-sf); }
+.op-dropdown-arrow { font-size: 10px; color: var(--ink-3); line-height: 1; }
+.op-dropdown-menu {
+  position: absolute; z-index: 6; top: calc(100% + 4px); left: 0; min-width: 100%;
+  margin: 0; padding: 4px; list-style: none;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); box-shadow: var(--shadow);
+}
+.op-dropdown-option {
+  padding: 8px 12px; border-radius: var(--r-sm); white-space: nowrap;
+  font-family: var(--font-ui); font-size: 13.5px; font-weight: 600; color: var(--ink);
+  cursor: pointer; transition: background .1s, color .1s;
+}
+.op-dropdown-option:hover,
+.op-dropdown-option:active,
+.op-dropdown-option.selected {
+  background: #000; color: #fff;
+}
+
+/* Sección de 2 columnas de Ficha (rango+gráfico / Puntas) — mismo
+   mecanismo de grilla que .op-home-mosaic/.op-home-col de arriba, que a
+   su vez replica .mosaic/.col de cotizaciones.component.css: grid de 2
+   columnas iguales + gap 14px, align-items:start para que cada columna
+   mida su propio contenido. Mismo breakpoint ≤1000px que Home (ver
+   @media más abajo). */
+.op-ficha-mosaic { display: grid; grid-template-columns: repeat(2, 1fr); align-items: start; gap: 14px; max-width: 100%; }
+.op-ficha-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* Ticket — Puntas + Orden en 2 columnas, mismo mecanismo que
+   .op-home-mosaic/.op-ficha-mosaic: grid de 2 columnas iguales + gap
+   14px. align-items:stretch (default, sin declarar acá) en vez de
+   :start — con :start cada card mide su propio contenido y Puntas
+   (2 cajas Compra/Venta) queda más baja que Orden (Precio/Plazo +
+   Cantidad/Monto); con stretch (default) ambas cards ocupan la altura
+   de fila del grid (la más alta = Orden), lo que le da a op-card.op-book
+   una altura real de la que .op-book-row-stacked puede tomar el 100%
+   (ver .op-card.op-book/.op-book-row-stacked/.ob-side más abajo) para
+   que Compra/Venta repartan ese alto en partes iguales. Clase propia
+   (no se reusa .op-ficha-mosaic) porque son subvistas distintas y el
+   alcance pide no tocar Ficha. Colapsa a 1 columna en el mismo
+   breakpoint ≤1000px que el resto de los mosaicos (ver @media más
+   abajo) — ahí Puntas queda arriba y Orden abajo, con su alto natural
+   (la cadena stretch/100% de abajo no se activa fuera del grid). */
+.op-ticket-mosaic { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; max-width: 100%; }
+
+/* Gráfico histórico del Ticket (pantalla de compra): misma pieza que
+   usa Ficha (.op-rango-pills + .fc-wrap, estilos más abajo), sólo se
+   agrega el espaciado interno de card + separación respecto del grid
+   de Puntas/Orden que va debajo. */
+.op-chart-card { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+
+/* Acciones en mobile: cards apiladas en vez de las tablas de 4 columnas
+   (Símbolo/Precio/Variación/Comprar no entran en ≤760px — mismo .op-table-wrap
+   que usa Panel, así que en vez de tocar esa clase compartida se oculta
+   .op-acciones-grid entera y se muestra esta lista aparte). Mismo patrón
+   visual de card que cedears-heatmap.component.ts (.sector-card): borde
+   --line, radio --r-lg, fondo --surface. Round 2 (PROMPT 8): la v1 apilaba
+   símbolo/precio/variación/botón en 4 renglones con labels propios y
+   terminaba en cards de 150px+; acá precio+variación+botón comparten un
+   solo renglón (símbolo arriba, todo lo demás abajo) para acercarse al
+   ~doble de alto de una fila de tabla desktop. */
+.op-acciones-cards { display: none; flex-direction: column; gap: 6px; }
+.op-acc-card {
+  display: flex; flex-direction: column; gap: 4px; text-align: left;
+  padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface); box-shadow: var(--shadow-sm); cursor: pointer;
+}
+.op-acc-id { display: flex; flex-direction: column; min-width: 0; }
+/* .opt-desc se oculta globalmente en mobile (ver .opt-desc{display:none}
+   más abajo, breakpoint 760px) — acá se reactiva sólo dentro de esta card
+   (selector de mayor especificidad), debajo del símbolo como en la tabla
+   desktop, pero a una sola línea con ellipsis en vez de wrap libre. */
+.op-acc-id .opt-desc {
+  display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+.op-acc-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.op-acc-price { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--ink); }
+.op-acc-chip {
+  display: inline-flex; align-items: center; height: 20px; padding: 0 7px;
+  border-radius: var(--r-sm); font-size: 11px; font-weight: 700;
+  background: var(--surface-2); color: var(--ink-3); border: 1px solid var(--line);
+}
+.op-acc-chip.pos { background: var(--pos-bg); border-color: var(--pos-line); color: var(--pos); }
+.op-acc-chip.neg { background: var(--neg-bg); border-color: var(--neg-line); color: var(--neg); }
+/* .op-acc-card entera es clickeable (ver template, comprarDirecto en el
+   click del div) — la flecha sólo indica que la card es interactiva,
+   ya no hay botón "Comprar" propio dentro de la card. */
+.op-acc-arrow { margin-left: auto; flex-shrink: 0; font-size: 15px; }
+
+/* "Ver todas las Acciones", sólo mobile (.op-acciones-cards ya oculta en
+   desktop). Mismo patrón que .op-back/.op-empty-cta. */
+.op-acc-verall {
+  height: 32px; margin-top: 2px; border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); color: var(--ink-2);
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; cursor: pointer;
+  transition: border-color .12s;
+}
+.op-acc-verall:hover { border-color: var(--line-2); }
+.op-acc-verall:active { transform: translateY(1px); }
+
+/* Referencia — grilla de 2 columnas (AL30 + Caución en la fila de
+   arriba). Bleed horizontal a los bordes de la card (padding de
+   .op-card en negativo) para que el hover llene la fila. */
+.op-ref-list { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 8px; margin: 0 -16px; }
+.op-ref-row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 16px; border: 0; border-bottom: 1px solid var(--line);
+  background: transparent; cursor: pointer; text-align: left;
+  font-family: var(--font-ui); color: var(--ink);
+  transition: background .14s;
+}
+/* Plazo fijo (3ra fila, última): con sólo 3 filas en un grid de 2
+   columnas, sin esto quedaba solo en la 2da fila ocupando 1 columna y
+   dejando un hueco vacío a la derecha. grid-column:1/-1 lo estira a las
+   2 columnas de esa fila sin afectar AL30/Caución (fila de arriba, que
+   sigue en su columna 1fr normal). */
+.op-ref-row:last-child { border-bottom: 0; grid-column: 1 / -1; }
+/* Fix de espaciado (medido con getBoundingClientRect, ver historial):
+   .orr-right tiene margin-left:auto para empujar valor+chip al borde
+   derecho de SU fila — en AL30/Caución esa fila mide ~289px (1 columna),
+   así que no se nota. Plazo fijo ocupa la fila COMPLETA (587px, ver
+   grid-column:1/-1 arriba, necesario para no dejar hueco) y el mismo
+   margin-left:auto ahí empujaba el valor hasta los 433px de x, lejísimos
+   del label — terminaba alineado bajo el valor de Caución en vez de
+   pegado a su propio label. Se pisa el auto con un gap fijo chico, igual
+   de ajustado que el resto de las filas. */
+.op-ref-row:last-child .orr-right { margin-left: 12px; }
+.op-ref-row:hover { background: var(--accent-sf); }
+/* Caución/Plazo fijo (ver template op-ref-row-static): sin destino de
+   navegación real, no deben parecer clickeables — sin cursor pointer ni
+   hover de fondo (a diferencia de AL30, que sí navega a Ficha). */
+.op-ref-row-static { cursor: default; }
+.op-ref-row-static:hover { background: transparent; }
+.orr-lbl {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--ink-3); flex-shrink: 0;
+}
+.orr-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.orr-val { font-size: 15px; font-weight: 600; color: var(--ink); }
+.orr-chevron { color: var(--ink-3); font-size: 15px; line-height: 1; flex-shrink: 0; }
+
+/* Hover propio (no el --accent-sf genérico de .op-mover:hover): el wash
+   pos/neg es la jerarquía visual pedida, tapar todo con el wash de
+   acento en hover la anularía — sólo se oscurece el borde. */
+.op-mover.op-mover-top:hover { border-color: var(--line); }
+.op-mover.op-mover-top .om-sym { font-size: 15px; }
+.op-mover.op-mover-top .om-px { font-size: 15px; font-weight: 600; }
+
+/* Fondos — carrusel horizontal (marquee) en la barra superior de Home,
+   entre el buscador y el panel de Dólar (antes era una card con grilla
+   al pie). El track lleva el contenido DUPLICADO (ver fondosTicker());
+   la animación corre a translateX(-50%) y vuelve a 0: como cada mitad
+   mide exactamente lo mismo (margin-right fijo por item, sin gap ni
+   padding en el track, que romperían la simetría), el loop es continuo
+   sin salto visible. mask-image desvanece los bordes para que los items
+   no aparezcan/desaparezcan cortados en seco. Pausa en hover para poder
+   leer. Color por signo con los mismos tokens --pos/--neg de siempre
+   (ui-kit.md §5.3). */
+.op-fondos-carousel {
+  height: 40px; display: flex; align-items: center;
+  overflow: hidden; position: relative;
+  border: 1px solid var(--line); border-radius: var(--r); background: var(--surface);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+.ofc-track {
+  display: inline-flex; align-items: center;
+  white-space: nowrap; width: max-content;
+  animation: ofc-scroll 45s linear infinite;
+}
+.op-fondos-carousel:hover .ofc-track { animation-play-state: paused; }
+.ofc-item { display: inline-flex; align-items: baseline; gap: 6px; margin-right: 28px; }
+.ofc-name { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.ofc-pct { font-size: 12px; font-weight: 700; }
+.ofc-pct.pos { color: var(--pos); }
+.ofc-pct.neg { color: var(--neg); }
+@keyframes ofc-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* Panel — header + buscador propio */
+.op-panel-head { display: flex; align-items: center; gap: 12px; }
+.op-panel-title { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--ink); }
+
+/* Panel — toolbar: pills de moneda + sub-tabs */
+.op-panel-toolbar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.op-cur-pills {
+  display: inline-flex; gap: 2px; padding: 3px;
+  border: 1px solid var(--line); border-radius: var(--r); background: var(--surface-2);
+}
+.op-cur-pill {
+  /* Radio concéntrico: contenedor .op-cur-pills (--r) menos 4px de
+     padding+borde — mismo criterio que .seg-btn en app.css. */
+  height: 28px; padding: 0 12px; border: 0; border-radius: calc(var(--r) - 4px);
+  background: transparent; color: var(--ink-2);
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; cursor: pointer;
+  transition: background .14s, box-shadow .14s, color .14s;
+}
+.op-cur-pill.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.op-cur-pill:disabled { color: var(--ink-3); cursor: not-allowed; opacity: .55; }
+.op-cur-pill:not(:disabled):hover { color: var(--ink); }
+
+.op-subtabs { display: flex; gap: 4px; }
+.op-subtab {
+  height: 32px; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); color: var(--ink-2); cursor: pointer;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 600;
+  transition: border-color .14s, color .14s, background .14s;
+}
+.op-subtab.on { border-color: var(--accent); color: var(--accent-2); background: var(--accent-sf); }
+.op-subtab:hover:not(.on) { border-color: var(--line-2); }
+
+/* Panel — tabla Nombre/Precio/Variación. Mismo look visual que .table-wrap
+   de app.css, reimplementado acá porque cada componente standalone tiene
+   su propio CSS con view encapsulation (no hay forma de importar esas
+   clases entre componentes) — mismo patrón que .tile-body table en
+   cotizaciones.component.css. */
+.op-table-wrap {
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  overflow: auto; max-height: calc(100dvh - 320px); background: var(--surface);
+}
+.op-table-wrap table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.op-table-wrap thead { position: sticky; top: 0; z-index: 2; }
+.op-table-wrap th {
+  text-align: left; padding: 9px 12px; background: var(--surface-2);
+  font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--ink-3); border-bottom: 1px solid var(--line); white-space: nowrap;
+  cursor: pointer; user-select: none; transition: color .12s;
+}
+.op-table-wrap th:hover { color: var(--ink); }
+.op-table-wrap th.sorted { color: var(--ink); }
+.op-table-wrap th.num, .op-table-wrap td.num { text-align: right; }
+.op-sort-arrow { font-size: 9px; color: var(--accent); margin-left: 3px; }
+.op-table-wrap td {
+  padding: 7px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; color: var(--ink);
+}
+.op-table-wrap tbody tr { cursor: pointer; transition: background .12s; }
+.op-table-wrap tbody tr:last-child td { border-bottom: 0; }
+.op-table-wrap tbody tr:nth-child(even) td { background: var(--surface-2); }
+.op-table-wrap tbody tr:hover td { background: var(--accent-sf); }
+.op-table-wrap td.num.pos { color: var(--pos); font-weight: 600; }
+.op-table-wrap td.num.neg { color: var(--neg); font-weight: 600; }
+
+/* Columna de acción de las tablas (Panel y Acciones de Home): ya NO
+   tiene un botón "Comprar" por fila — toda la fila es clickeable
+   (.op-row-buy, ver template) y ejecuta la misma acción de compra
+   directa que antes hacía el botón. Sólo queda una flecha sutil
+   (.op-row-arrow) como indicador visual al final de la fila. */
+.op-th-accion { width: 1%; }
+.op-td-accion { white-space: nowrap; }
+.op-row-buy:hover td { background: var(--accent-sf); }
+.op-row-arrow {
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink-3); font-size: 16px; line-height: 1;
+  transition: color .12s, transform .12s;
+}
+.op-row-buy:hover .op-row-arrow { color: var(--accent-2); transform: translateX(2px); }
+.opt-sym { font-family: var(--font-mono); font-weight: 600; }
+.opt-desc { display: block; font-size: 11px; font-weight: 400; color: var(--ink-3); font-family: var(--font-ui); }
+tr.op-buy td { background: var(--accent-sf); }
+tr.op-sell td { background: var(--warn-bg); }
+
+/* Ficha — header + precio protagonista */
+.op-ficha-head { display: flex; align-items: center; gap: 12px; }
+.op-ficha-id { display: flex; flex-direction: column; gap: 1px; }
+.fh-sym { font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--ink); }
+.fh-desc { font-size: 12px; color: var(--ink-3); }
+.op-ficha-price { display: flex; align-items: baseline; gap: 10px; }
+.fp-val { font-size: 30px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
+.fp-chip {
+  display: inline-flex; align-items: center; height: 24px; padding: 0 9px;
+  border-radius: var(--r-sm); font-family: var(--font-mono); font-size: 12.5px; font-weight: 700;
+  background: var(--surface-2); color: var(--ink-3); border: 1px solid var(--line);
+}
+.fp-chip.pos { background: var(--pos-bg); border-color: var(--pos-line); color: var(--pos); }
+.fp-chip.neg { background: var(--neg-bg); border-color: var(--neg-line); color: var(--neg); }
+
+/* Ficha — selector de rango: mismo patrón .seg del ui-kit */
+.op-rango-pills {
+  display: inline-flex; gap: 2px; padding: 3px; align-self: flex-start;
+  border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface-2);
+}
+.op-rango-pill {
+  height: 28px; min-width: 44px; padding: 0 10px; border: 0; border-radius: var(--r-sm);
+  background: transparent; color: var(--ink-2);
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: color .12s, background .12s, box-shadow .12s;
+}
+.op-rango-pill:hover { color: var(--ink); }
+.op-rango-pill.on {
+  background: var(--surface); color: var(--ink);
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--line-2);
+}
+
+/* Ficha/Ticket — contenedor del gráfico: card con borde y radio, igual
+   que tablas. El gráfico real vive adentro (TradingView Lightweight
+   Charts, ver createOrUpdateChart() en el component) — .fc-chart es
+   sólo el <div> anfitrión que la librería toma y llena con su propio
+   canvas; los ejes/crosshair/tooltip los dibuja la librería. */
+.fc-wrap {
+  position: relative; border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface); padding: 16px;
+}
+.fc-chart { width: 100%; height: 280px; }
+
+/* Loader sutil al recargar un rango (ver historicoLoading() en el
+   template) — overlay semi-transparente sobre el gráfico VIGENTE, nunca
+   lo oculta del todo: los últimos datos válidos siguen visibles debajo
+   mientras llega la respuesta del nuevo rango (regla 3). */
+.fc-loading-overlay {
+  position: absolute; inset: 16px; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border-radius: var(--r); pointer-events: none;
+}
+.fc-spinner {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2.5px solid var(--line-2); border-top-color: var(--accent);
+  animation: fc-spin .7s linear infinite;
+}
+@keyframes fc-spin { to { transform: rotate(360deg); } }
+
+/* Aviso amigable cuando el rango pedido no trajo datos reales de ninguna
+   fuente (Cohen/IOL) — se muestra ARRIBA del gráfico VIGENTE (que sigue
+   mostrando los últimos datos válidos, regla 3), nunca en su lugar. */
+.op-chart-aviso {
+  padding: 8px 12px; margin-bottom: 10px; border-radius: var(--r-sm);
+  background: var(--warn-bg); border: 1px solid var(--warn-line); color: var(--warn-strong);
+  font-size: 12px; font-weight: 600;
+}
+
+/* Ficha — mini-libro de puntas, colapsable */
+.op-book-toggle {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  border: 0; background: transparent; padding: 0; margin: 0 0 12px; cursor: pointer;
+}
+.op-book-toggle h3 { margin: 0; }
+.ob-title-wrap { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; }
+.ob-title-wrap h3 { margin: 0; }
+.op-book-toggle .ob-title-wrap { margin: 0; }
+.ob-chevron { color: var(--ink-3); font-size: 16px; transition: transform .16s cubic-bezier(.16,1,.3,1); }
+.ob-chevron.open { transform: rotate(90deg); }
+.op-book-row { display: flex; gap: 14px; }
+.ob-side {
+  flex: 1; display: flex; flex-direction: column; gap: 4px;
+  padding: 10px 12px; border-radius: var(--r); border: 1px solid var(--line);
+}
+/* Cadena de alturas para que Puntas (Ticket) llene exactamente el alto
+   de Orden — SOLO afecta la instancia que combina op-card.op-book con
+   la clase adicional op-book-fill (ver template); Ficha usa
+   "op-card op-book" sin op-book-fill y queda con su height:auto de
+   siempre, sin cambios.
+   1) .op-card.op-book-fill: flex-column + height:100% — el grid padre
+      (.op-ticket-mosaic, align-items:stretch por default) ya estira esta
+      card a la altura de fila (igual a Orden); height:100% + flex-column
+      hace que su contenido interno (título + fila de Compra/Venta) pueda
+      repartirse ese alto en vez de quedarse en su alto natural.
+   2) .op-book-row.op-book-row-stacked: flex:1 además de flex-direction:
+      column (ya estaba) — toma el espacio restante de op-book-fill
+      (descontado el título) para que sea ese contenedor, no el título,
+      el que efectivamente mida el 100% repartible.
+   3) .ob-side dentro de esa combinación: flex:1 1 0 (en vez del flex:1
+      genérico de la regla de arriba, que sólo garantiza ancho igual en
+      el layout lado-a-lado de Ficha) — con flex-basis:0 cada caja
+      Compra/Venta arranca sin alto de contenido como base y crece en
+      partes EXACTAMENTE iguales para llenar op-book-row-stacked. */
+.op-card.op-book-fill { display: flex; flex-direction: column; height: 100%; }
+.op-book-row.op-book-row-stacked { flex-direction: column; }
+.op-book-fill .op-book-row.op-book-row-stacked { flex: 1; }
+.op-book-fill .op-book-row.op-book-row-stacked > .ob-side { flex: 1 1 0; }
+.ob-buy { border-color: var(--accent-sf); background: var(--accent-sf); }
+.ob-sell { border-color: var(--warn-line); background: var(--warn-bg); }
+.ob-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); }
+.ob-px { font-size: 16px; font-weight: 700; color: var(--ink); }
+.ob-qty { font-size: 11.5px; color: var(--ink-2); }
+
+/* Ficha — botón sticky de compra (también lo usa Ticket) */
+.op-buy-sticky {
+  position: sticky; bottom: 0; z-index: 3;
+  width: 100%; height: 46px; margin-top: 4px;
+  border: 0; border-radius: var(--r-sm);
+  background: var(--accent); color: var(--surface);
+  font-family: var(--font-ui); font-size: 14px; font-weight: 700; cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: opacity .14s, transform .04s;
+}
+.op-buy-sticky:hover { opacity: .92; }
+.op-buy-sticky:active { transform: translateY(1px); }
+.op-buy-sticky:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.op-buy-sticky:disabled:hover { opacity: .5; }
+.op-buy-sticky:disabled:active { transform: none; }
+/* Paso 1 del Ticket ("Revisar orden"): mismo botón pero menos pesado
+   frente al resto de la card Orden — Ficha/Paso 2 conservan 46px. */
+.op-buy-sticky-sm { height: 42px; }
+
+/* Ticket — card "Orden" (Precio/Plazo/Cantidad/Monto/Revisar orden) */
+.op-order-body { display: flex; flex-direction: column; gap: 18px; }
+/* "Revisar orden" ahora vive dentro de op-order-body en vez de a lo
+   ancho completo de la pantalla (ver template) — reusa .op-buy-sticky
+   por el estilo visual (color, tipografía, radio), pero position:sticky
+   ya no tiene sentido acá: haría que el botón se despegue del borde/
+   fondo de la card op-order al hacer scroll y flote sobre el resto de
+   la pantalla sin el marco de la card detrás, en vez de quedar como
+   cierre visual del bloque (justo lo que se pidió evitar). static +
+   margin-top:auto (op-order-body es flex-column) lo deja pegado al
+   final de la card en flujo normal, sin escapar del contenedor. */
+.op-order-body > .op-buy-sticky { position: static; margin-top: auto; }
+
+/* Ticket — fila de 2 columnas reusada por Precio/Plazo de liquidación Y
+   por Cantidad/Monto a invertir (misma .op-order-body, 2 filas
+   .op-ticket-row seguidas): flex + gap 14px + flex-wrap, cada .op-field
+   con min-width 140px. Al no forzarse un grid fijo, en anchos angostos
+   (contenido de card por debajo de ~294px, dos columnas de 140px + gap)
+   cada fila apila sus 2 campos en 1 columna sola, mismo comportamiento
+   que ya tenía Precio/Plazo — no hace falta una media query nueva para
+   el breakpoint mobile. */
+.op-ticket-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.op-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 140px; }
+.of-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); }
+.op-select, .op-input {
+  height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); color: var(--ink); font-family: var(--font-ui); font-size: 14px; outline: none;
+  transition: border-color .12s, box-shadow .12s;
+}
+.op-select:focus, .op-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-sf); }
+/* Menú desplegable (options) del <select> nativo: mismo radio que el
+   botón (--r-sm) y hover/active en un azul suave (--accent-sf) en vez
+   del azul fuerte "Highlight" que aplica el navegador por defecto. */
+.op-select option {
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+}
+.op-select option:hover,
+.op-select option:focus,
+.op-select option:checked {
+  background: var(--accent-sf);
+  color: var(--ink);
+}
+.op-input.num { font-family: var(--font-mono); }
+/* Monto a invertir — protagonista de la pantalla, mismo tratamiento que
+   Panel usa para precios destacados (mono, bold, tamaño elevado). */
+.op-input-monto { height: 48px; font-size: 20px; font-weight: 700; }
+/* Fila de label del campo Monto: "Monto a invertir" a la izquierda,
+   "Disponible" (o el aviso) a la derecha, misma línea de base — mismo
+   patrón que .orr-lbl/.orr-right de Referencia (Home). */
+.of-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.of-hint { font-size: 11px; color: var(--ink-3); }
+.of-hint-warn { color: var(--warn); font-weight: 600; }
+
+/* Ticket — fila de Cantidad: el input manda (flex-grow), −/+ quedan
+   como botones compactos de tamaño fijo al lado (ver docs/design-refs/compra2.png). */
+.op-stepper { display: flex; align-items: center; gap: 8px; }
+.op-step-input {
+  flex: 1; min-width: 0; height: 40px; padding: 0 12px; text-align: left;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); color: var(--ink);
+  font-family: var(--font-mono); font-size: 15px; font-weight: 600; outline: none;
+  transition: border-color .12s, box-shadow .12s;
+}
+.op-step-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-sf); }
+.op-step-btn {
+  flex: 0 0 32px; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); color: var(--ink); font-size: 16px; font-weight: 700; line-height: 1; cursor: pointer;
+  transition: border-color .12s, transform .04s;
+}
+.op-step-btn:hover:not(:disabled) { border-color: var(--line-2); }
+.op-step-btn:active:not(:disabled) { transform: translateY(1px); }
+.op-step-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Ticket — resumen del Paso 2, mismo patrón visual de lista que Referencia
+   (Home) pero sin comportamiento tappable (son filas de sólo lectura). */
+.op-summary-list { display: flex; flex-direction: column; margin: 0 -16px; }
+.op-summary-row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 16px; border-bottom: 1px solid var(--line);
+}
+.op-summary-row:last-child { border-bottom: 0; }
+
+.op-legal { margin: 0; font-size: 11.5px; color: var(--ink-3); line-height: 1.5; }
+
+/* Ticket — checkbox propio (ui-kit no define uno todavía) */
+.op-checkbox-row { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 4px 0; }
+.op-checkbox {
+  appearance: none; -webkit-appearance: none;
+  width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); cursor: pointer; position: relative;
+  transition: background .14s, border-color .14s;
+}
+.op-checkbox:hover { border-color: var(--line-2); }
+.op-checkbox:checked { background: var(--accent); border-color: var(--accent); }
+.op-checkbox:checked::after {
+  content: ''; position: absolute; left: 5px; top: 1px;
+  width: 5px; height: 9px;
+  border: solid var(--surface); border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.op-checkbox:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-sf); }
+.op-checkbox-row span { font-size: 13px; color: var(--ink-2); line-height: 1.4; }
+
+/* Banner familia warn: Ticket ("no habilitada") y Cartera ("simulados"). */
+.op-warn-banner {
+  padding: 12px 16px; border: 1px solid var(--warn-line); border-left: 3px solid var(--warn);
+  background: var(--warn-bg); border-radius: var(--r); color: var(--warn);
+  font-size: 12.5px; line-height: 1.5;
+}
+.op-warn-banner p { margin: 0 0 8px; }
+.op-warn-banner-link {
+  border: 0; background: transparent; padding: 0; margin: 0;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 700; color: var(--warn);
+  cursor: pointer; text-decoration: underline;
+}
+
+/* op-home-head: buscador + toggles de instrumento + botón Cartera en una
+   sola fila (pedido de Elio) — antes sólo tenía buscador+Cartera, los
+   toggles vivían en su propia fila aparte más abajo. flex-wrap:wrap para
+   que en anchos angostos (antes del breakpoint mobile explícito de
+   abajo) los toggles puedan bajar de línea sin romper el buscador ni el
+   botón Cartera, que se mantienen flex-shrink:0/flex:1 como ya estaban. */
+.op-home-head { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.op-home-head .op-search-wrap { flex: 0 1 260px; min-width: 0; order: 1; margin-right: auto; }
+/* El carrusel de Fondos absorbe todo el espacio libre entre el buscador
+   y el Dólar (flex:1) — cuando no hay datos no se renderiza y el
+   margin-right:auto del buscador mantiene la barra como antes. */
+.op-home-head .op-fondos-carousel { flex: 1 1 0; min-width: 160px; order: 1; }
+.op-home-head .op-top-dolar { flex-shrink: 0; order: 2; }
+.op-home-head .op-top-mover { flex-shrink: 0; order: 3; }
+.op-home-head .op-cartera-btn { order: 4; }
+.op-cartera-btn { flex-shrink: 0; position: relative; display: inline-flex; align-items: center; gap: 6px; height: 40px; }
+
+/* Widget compacto de Destacados, al lado del buscador (pedido de Elio,
+   ocupa el espacio que dejaron los 5 toggles de instrumento) — mismo
+   alto que .op-search (40px) para alinear en la fila. Una sola línea:
+   label + símbolo + precio + variación + botón Comprar chico. Reusa
+   .op-buy-row-btn (mismo botón "Comprar" del resto de la app) en vez de
+   un botón nuevo. NO es la card .op-destacados completa (esa sigue
+   intacta más abajo) — acá no entra el grid de 4 movers ni el padding
+   de una .op-card, es un control de línea única. */
+.op-top-mover {
+  display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 6px 0 12px;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--surface);
+}
+.otm-lbl {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3);
+  flex-shrink: 0;
+}
+.op-top-mover-body {
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left;
+}
+/* Transición de la rotación automática (ver rotatingMover/@for con track
+   por symbol en el template): fade + slide sutil de entrada cada vez
+   que Angular recrea el nodo al cambiar de mover. */
+.otm-fade-in { animation: otm-fade-in .32s cubic-bezier(.16,1,.3,1); }
+@keyframes otm-fade-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .otm-fade-in { animation: none; }
+}
+.otm-sym { font-family: var(--font-mono); font-weight: 600; font-size: 13px; color: var(--ink); }
+.otm-px { font-size: 13px; color: var(--ink-2); }
+.otm-chip {
+  display: inline-flex; align-items: center; height: 20px; padding: 0 7px;
+  border-radius: var(--r-sm); font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-3);
+}
+/* Antes fija en .pos (topMover() sólo filtraba ganadores) — ahora el
+   widget rota sobre destacados() completo, que puede incluir movers
+   negativos (ordenado por variación ABSOLUTA), así que necesita ambas
+   variantes semánticas, igual que .om-chip/.or-chip. */
+.otm-chip.pos { background: var(--pos-bg); border-color: var(--pos-line); color: var(--pos); }
+.otm-chip.neg { background: var(--neg-bg); border-color: var(--neg-line); color: var(--neg); }
+/* .op-buy-row-btn: clase referenciada en el template pero sin regla
+   propia (quedó huérfana) — el botón "Comprar" de Destacados heredaba
+   sólo el estilo por defecto del navegador, inconsistente con el resto
+   de la app. Se alinea acá con el sistema de botones secundarios
+   (mismo radio/padding simétrico que .op-subtab) + hover forzado a
+   negro sólido, sin tocar el (click) ni los parámetros de
+   comprarDirecto(). */
+.op-buy-row-btn {
+  height: 26px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface); color: var(--ink); cursor: pointer;
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.op-buy-row-btn:hover { background: #000; color: #fff; border-color: #000; }
+.op-top-mover-buy { flex-shrink: 0; height: 26px; }
+.op-top-mover-empty { padding: 0; font-size: 12px; }
+
+/* Panel de Dólar compacto de la barra superior, al lado de "Destacada"
+   (ver .op-top-mover arriba) — misma altura (40px) para alinear en la
+   fila. Reusa dolarStrip del component, piel propia en vez de la card
+   .op-dolares completa. */
+.op-top-dolar {
+  display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--surface);
+}
+.otd-item { display: flex; align-items: baseline; gap: 5px; }
+.otd-lbl {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3);
+}
+.otd-val { font-size: 13px; font-weight: 600; color: var(--ink); }
+.op-cartera-badge {
+  position: absolute; top: -6px; right: -6px; min-width: 16px; height: 16px; padding: 0 3px;
+  background: var(--pos); color: var(--surface); font-size: 10px; font-weight: 700;
+  line-height: 16px; text-align: center; border-radius: 99px;
+}
+
+.op-back, .op-empty-cta {
+  height: 32px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface);
+  color: var(--ink-2); font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; cursor: pointer;
+  transition: border-color .12s;
+}
+.op-back { align-self: flex-start; padding: 0 12px; margin-bottom: 4px; }
+.op-back:hover, .op-empty-cta:hover { border-color: var(--line-2); }
+.op-back:active { transform: translateY(1px); }
+.op-empty-cta { margin-top: 10px; padding: 0 14px; }
+.op-empty {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 20px; color: var(--ink-3); font-size: 13px; text-align: center;
+  border: 1px dashed var(--line); border-radius: var(--r-lg); background: var(--surface);
+}
+
+/* Mismo breakpoint que .mosaic de cotizaciones.component.css (1000px). */
+@media (max-width: 1000px) {
+  .op-ficha-mosaic { grid-template-columns: 1fr; }
+  .op-ticket-mosaic { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  /* op-home-head en 1 columna: buscador a ancho completo, luego widget de
+     Destacados compacto, luego Cartera — en vez de la fila única de
+     desktop, que en mobile (buscador flex-basis 220px + widget + botón
+     Cartera) no entraría y forzaría wraps desprolijos a mitad de
+     elemento. */
+  .op-home-head { flex-direction: column; align-items: stretch; }
+  .op-home-head .op-search-wrap { flex: 1 1 auto; max-width: none; }
+  .op-search { max-width: none; }
+  .op-top-mover { justify-content: space-between; }
+  .op-top-dolar { justify-content: space-between; }
+  .op-dolares-row { flex-direction: column; }
+  .op-dollar-item { padding: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+  .op-dollar-item:not(:first-child) { padding-top: 8px; }
+  .op-dollar-item:not(:last-child) { padding-bottom: 8px; }
+  .op-dollar-item:last-child { border-bottom: 0; }
+  /* Antes .op-acciones-grid se ocultaba entera y .op-acciones-cards (fuera
+     del grid) se mostraba sola, con una única lista global. Ahora cada
+     columna es independiente (dropdown propio, ver .op-acciones-col) y
+     .op-acciones-cards vive DENTRO de esa columna/grid — ocultar el grid
+     completo escondería también las cards (un padre display:none oculta
+     a sus descendientes sin importar su propio display). Se apilan las
+     2 columnas en 1 sola (mismo criterio que el resto de los mosaicos en
+     este breakpoint) y, dentro de cada una, se alterna tabla↔cards. */
+  .op-acciones-grid { grid-template-columns: 1fr; }
+  /* Escopeado a .op-acciones-grid (no un .op-table-wrap global): esa
+     misma clase la reusan Panel y Cartera/Movimientos (ver
+     .op-cartera-table), que están fuera de alcance y no deben ocultarse. */
+  .op-acciones-grid .op-table-wrap { display: none; }
+  .op-acciones-cards { display: flex; }
+  .op-ref-list { grid-template-columns: 1fr; }
+  .op-ref-row { flex-wrap: wrap; }
+  .op-fondos-grid { grid-template-columns: 1fr; }
+  .op-result { grid-template-columns: 72px 1fr auto; }
+  .or-desc { display: none; }
+  .op-panel-toolbar { gap: 10px; }
+  .opt-desc { display: none; }
+  .op-cartera-table { display: none; }
+  .op-mobile-cards { display: flex; }
+}
